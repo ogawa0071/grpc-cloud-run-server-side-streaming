@@ -1,3 +1,5 @@
+<!-- https://github.com/grpc/grpc-web/blob/master/net/grpc/gateway/examples/helloworld/README.md -->
+
 # gRPC-Web Hello World Guide
 
 This guide is intended to help you get started with gRPC-Web with a simple
@@ -43,24 +45,23 @@ and we can access the message field via `call.request.name`. Then we construct
 a nice response and send it back to the client via `callback(null, response)`.
 
 ```js
-var PROTO_PATH = __dirname + '/helloworld.proto';
+var PROTO_PATH = __dirname + "/helloworld.proto";
 
-var grpc = require('@grpc/grpc-js');
-var protoLoader = require('@grpc/proto-loader');
-var packageDefinition = protoLoader.loadSync(
-    PROTO_PATH,
-    {keepCase: true,
-     longs: String,
-     enums: String,
-     defaults: true,
-     oneofs: true
-    });
+var grpc = require("@grpc/grpc-js");
+var protoLoader = require("@grpc/proto-loader");
+var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
+  keepCase: true,
+  longs: String,
+  enums: String,
+  defaults: true,
+  oneofs: true,
+});
 var protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
 var helloworld = protoDescriptor.helloworld;
 
 function doSayHello(call, callback) {
   callback(null, {
-    message: 'Hello! ' + call.request.name
+    message: "Hello! " + call.request.name,
   });
 }
 
@@ -75,10 +76,13 @@ function getServer() {
 if (require.main === module) {
   var server = getServer();
   server.bindAsync(
-    '0.0.0.0:9090', grpc.ServerCredentials.createInsecure(), (err, port) => {
+    "0.0.0.0:9090",
+    grpc.ServerCredentials.createInsecure(),
+    (err, port) => {
       assert.ifError(err);
       server.start();
-  });
+    }
+  );
 }
 
 exports.getServer = getServer;
@@ -94,43 +98,43 @@ cluster at port `:9090`.
 ```yaml
 static_resources:
   listeners:
-  - name: listener_0
-    address:
-      socket_address: { address: 0.0.0.0, port_value: 8080 }
-    filter_chains:
-    - filters:
-      - name: envoy.http_connection_manager
-        config:
-          codec_type: auto
-          stat_prefix: ingress_http
-          route_config:
-            name: local_route
-            virtual_hosts:
-            - name: local_service
-              domains: ["*"]
-              routes:
-              - match: { prefix: "/" }
-                route:
-                  cluster: greeter_service
-                  max_grpc_timeout: 0s
-              cors:
-                allow_origin_string_match:
-                - prefix: "*"
-                allow_methods: GET, PUT, DELETE, POST, OPTIONS
-                allow_headers: keep-alive,user-agent,cache-control,content-type,content-transfer-encoding,custom-header-1,x-accept-content-transfer-encoding,x-accept-response-streaming,x-user-agent,x-grpc-web,grpc-timeout
-                max_age: "1728000"
-                expose_headers: custom-header-1,grpc-status,grpc-message
-          http_filters:
-          - name: envoy.grpc_web
-          - name: envoy.cors
-          - name: envoy.router
+    - name: listener_0
+      address:
+        socket_address: { address: 0.0.0.0, port_value: 8080 }
+      filter_chains:
+        - filters:
+            - name: envoy.http_connection_manager
+              config:
+                codec_type: auto
+                stat_prefix: ingress_http
+                route_config:
+                  name: local_route
+                  virtual_hosts:
+                    - name: local_service
+                      domains: ["*"]
+                      routes:
+                        - match: { prefix: "/" }
+                          route:
+                            cluster: greeter_service
+                            max_grpc_timeout: 0s
+                      cors:
+                        allow_origin_string_match:
+                          - prefix: "*"
+                        allow_methods: GET, PUT, DELETE, POST, OPTIONS
+                        allow_headers: keep-alive,user-agent,cache-control,content-type,content-transfer-encoding,custom-header-1,x-accept-content-transfer-encoding,x-accept-response-streaming,x-user-agent,x-grpc-web,grpc-timeout
+                        max_age: "1728000"
+                        expose_headers: custom-header-1,grpc-status,grpc-message
+                http_filters:
+                  - name: envoy.grpc_web
+                  - name: envoy.cors
+                  - name: envoy.router
   clusters:
-  - name: greeter_service
-    connect_timeout: 0.25s
-    type: logical_dns
-    http2_protocol_options: {}
-    lb_policy: round_robin
-    hosts: [{ socket_address: { address: 0.0.0.0, port_value: 9090 }}]
+    - name: greeter_service
+      connect_timeout: 0.25s
+      type: logical_dns
+      http2_protocol_options: {}
+      lb_policy: round_robin
+      hosts: [{ socket_address: { address: 0.0.0.0, port_value: 9090 } }]
 ```
 
 > NOTE: As per [this issue](https://github.com/grpc/grpc-web/issues/436): if
@@ -153,13 +157,13 @@ static_resources:
 Now, we are ready to write some client code! Put this in a `client.js` file.
 
 ```js
-const {HelloRequest, HelloReply} = require('./helloworld_pb.js');
-const {GreeterClient} = require('./helloworld_grpc_web_pb.js');
+const { HelloRequest, HelloReply } = require("./helloworld_pb.js");
+const { GreeterClient } = require("./helloworld_grpc_web_pb.js");
 
-var client = new GreeterClient('http://localhost:8080');
+var client = new GreeterClient("http://localhost:8080");
 
 var request = new HelloRequest();
-request.setName('World');
+request.setName("World");
 
 client.sayHello(request, {}, (err, response) => {
   console.log(response.getMessage());
@@ -173,7 +177,6 @@ next section) from the `helloworld.proto` file we defined earlier.
 Then we instantiate a `GreeterClient` instance, set the field in the
 `HelloRequest` protobuf object, and we can make a gRPC call via
 `client.sayHello()`, just like how we defined in the `helloworld.proto` file.
-
 
 You will need a `package.json` file. This is needed for both the `server.js` and
 the `client.js` files.
@@ -202,20 +205,19 @@ And finally a simple `index.html` file.
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>gRPC-Web Example</title>
-<script src="./dist/main.js"></script>
-</head>
-<body>
-  <p>Open up the developer console and see the logs for the output.</p>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>gRPC-Web Example</title>
+    <script src="./dist/main.js"></script>
+  </head>
+  <body>
+    <p>Open up the developer console and see the logs for the output.</p>
+  </body>
 </html>
 ```
 
 The `./dist/main.js` file will be generated by `webpack` (which will be covered
 in the next section).
-
 
 And that's it! We have all the code ready. Let's run the example!
 
@@ -223,8 +225,9 @@ And that's it! We have all the code ready. Let's run the example!
 
 To generate the protobuf messages and client service stub class from your
 `.proto` definitions, we need:
- - the `protoc` binary, _and_
- - the `protoc-gen-grpc-web` plugin.
+
+- the `protoc` binary, _and_
+- the `protoc-gen-grpc-web` plugin.
 
 > You can download the `protoc-gen-grpc-web` protoc plugin from our
 > [release](https://github.com/grpc/grpc-web/releases) page.
@@ -242,7 +245,6 @@ To generate the protobuf messages and client service stub class from your
 > $ sudo chmod +x /usr/local/bin/protoc-gen-grpc-web
 > ```
 
-
 When you have both `protoc` and `protoc-gen-grpc-web` installed, you can now
 run this command:
 
@@ -255,10 +257,10 @@ $ protoc -I=. helloworld.proto \
 After the command runs successfully, you should now see two new files generated
 in the current directory:
 
- - `helloworld_pb.js`: this contains the `HelloRequest` and `HelloReply`
-   classes
- - `helloworld_grpc_web_pb.js`: this contains the `GreeterClient` class
- 
+- `helloworld_pb.js`: this contains the `HelloRequest` and `HelloReply`
+  classes
+- `helloworld_grpc_web_pb.js`: this contains the `GreeterClient` class
+
 These are also the 2 files that our `client.js` file imported earlier in the
 example.
 
@@ -282,20 +284,20 @@ statements and produce a `./dist/main.js` file that can be embedded in our
 We are ready to run the Hello World example. The following set of commands will
 run the 3 processes all in the background.
 
- 1. Run the NodeJS gRPC Service. This listens at port `:9090`.
+1.  Run the NodeJS gRPC Service. This listens at port `:9090`.
 
- ```sh
- $ node server.js &
- ```
+```sh
+$ node server.js &
+```
 
- 2. Run the Envoy proxy. The `envoy.yaml` file configures Envoy to listen to
- browser requests at port `:8080`, and forward them to port `:9090` (see
- above).
+2.  Run the Envoy proxy. The `envoy.yaml` file configures Envoy to listen to
+    browser requests at port `:8080`, and forward them to port `:9090` (see
+    above).
 
- ```sh
- $ docker run -d -v "$(pwd)"/envoy.yaml:/etc/envoy/envoy.yaml:ro \
-     --network=host envoyproxy/envoy:v1.15.0
- ```
+```sh
+$ docker run -d -v "$(pwd)"/envoy.yaml:/etc/envoy/envoy.yaml:ro \
+    --network=host envoyproxy/envoy:v1.15.0
+```
 
 > NOTE: As per [this issue](https://github.com/grpc/grpc-web/issues/436):
 > if you are running Docker on Mac/Windows, remove the `--network=host` option:
@@ -303,14 +305,14 @@ run the 3 processes all in the background.
 > ```sh
 > $ docker run -d -v "$(pwd)"/envoy.yaml:/etc/envoy/envoy.yaml:ro \
 >     -p 8080:8080 -p 9901:9901 envoyproxy/envoy:v1.15.0
->  ```
+> ```
 
- 3. Run the simple Web Server. This hosts the static file `index.html` and
- `dist/main.js` we generated earlier.
+3.  Run the simple Web Server. This hosts the static file `index.html` and
+    `dist/main.js` we generated earlier.
 
- ```sh
- $ python3 -m http.server 8081 &
- ```
+```sh
+$ python3 -m http.server 8081 &
+```
 
 When these are all ready, you can open a browser tab and navigate to
 
