@@ -1,20 +1,20 @@
 // https://github.com/grpc/grpc-web/blob/master/net/grpc/gateway/examples/helloworld/node-client.js
 
-var PROTO_PATH = __dirname + "/helloworld.proto";
+const PROTO_PATH = __dirname + "/helloworld.proto";
 
-var async = require("async");
-var grpc = require("@grpc/grpc-js");
-var protoLoader = require("@grpc/proto-loader");
-var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
+const async = require("async");
+const grpc = require("@grpc/grpc-js");
+const protoLoader = require("@grpc/proto-loader");
+const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
   longs: String,
   enums: String,
   defaults: true,
   oneofs: true,
 });
-var protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
-var helloworld = protoDescriptor.helloworld;
-var client = new helloworld.Greeter(
+const protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
+const helloworld = protoDescriptor.helloworld;
+const client = new helloworld.Greeter(
   "localhost:9090",
   grpc.credentials.createInsecure()
 );
@@ -33,7 +33,7 @@ function runSayHello(callback) {
  * @param {function():?} callback
  */
 function runSayRepeatHello(callback) {
-  var stream = client.sayRepeatHello({ name: "John", count: 5 }, {});
+  const stream = client.sayRepeatHello({ name: "John", count: 5 }, {});
   stream.on("data", (response) => {
     console.log(response.message);
   });
@@ -46,7 +46,7 @@ function runSayRepeatHello(callback) {
  * @param {function():?} callback
  */
 function runSayHelloAfterDelay(callback) {
-  var deadline = new Date();
+  const deadline = new Date();
   deadline.setSeconds(deadline.getSeconds() + 1);
 
   client.sayHelloAfterDelay(

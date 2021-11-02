@@ -249,9 +249,11 @@ When you have both `protoc` and `protoc-gen-grpc-web` installed, you can now
 run this command:
 
 ```sh
-$ protoc -I=. helloworld.proto \
-  --js_out=import_style=commonjs:. \
-  --grpc-web_out=import_style=commonjs,mode=grpcwebtext:.
+$ yarn grpc_tools_node_protoc -I=. helloworld.proto --js_out=import_style=commonjs,binary:. --grpc-web_out=import_style=commonjs+dts,mode=grpcwebtext:.
+
+$ yarn grpc_tools_node_protoc -I=. helloworld.proto --js_out=import_style=commonjs,binary:. --grpc_out=. --plugin=protoc-gen-grpc=node_modules/.bin/grpc_tools_node_protoc_plugin
+
+$ yarn grpc_tools_node_protoc -I=. helloworld.proto --ts_out=. --plugin=protoc-gen-ts=node_modules/.bin/protoc-gen-ts
 ```
 
 After the command runs successfully, you should now see two new files generated

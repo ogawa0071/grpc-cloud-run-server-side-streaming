@@ -1,4 +1,5 @@
 dist/
 *_pb.js
+*_pb.d.ts
 node_modules/
 package-lock.json
